@@ -1,9 +1,9 @@
 # author: Javier Garcia Ramirez
-# create date: Sat Nov 28, 2020
-# last modified: Sun, Nov 29, 2020
-# filename: 09-space-invader.py
+# create date: S. Nov 28, 2020
+# last modified: R. Mar 25, 2021
+# filename: space_invader.py
 # description: space invaders board game using 2D-arrays
-# assignment: 9
+
 
 def createGrid():
     rows = 7
@@ -13,7 +13,11 @@ def createGrid():
         grid.append(['-']*columns)
     return columns, rows, grid
 
-def printGrid(column, rows, grid):
+
+def printGrid(column, rows, grid, round):
+    if (round == False):
+        print ("\n")
+
     x = 0
     for row in range(rows):
         print (chr(65+row), end=' ') # prints the letter row
@@ -27,6 +31,7 @@ def printGrid(column, rows, grid):
                     print ("   ", j+1, end=' ')
     print (" ")
 
+
 def getInitialPositions(case, rows, grid):    
     userInput = input(" (1-7): ")
     while (len(userInput) != 1 or userInput <= '0' or '8' <= userInput):    # double check if this is right
@@ -39,6 +44,7 @@ def getInitialPositions(case, rows, grid):
         y = 0 # y = 0 = top row
         grid[y][columns] = "U" 
     return y, columns
+
 
 def getInput(case, missile_count):
     error = True
@@ -57,6 +63,7 @@ def getInput(case, missile_count):
             else: error = False
     return userInput
 
+
 def manouverShip(column, y, grid, missile_count, x):
     ship_decision = getInput(1, missile_count) # 1 is fixed because this is case 1
     ship_decision = checkShipManouver(column, x, missile_count, ship_decision)
@@ -69,6 +76,7 @@ def manouverShip(column, y, grid, missile_count, x):
         grid[y-1][x] = 'M' 
         missile_count -= 1
     return x, missile_count
+
 
 def checkShipManouver(column, x, missile_count, decision):
     error = True
@@ -83,6 +91,7 @@ def checkShipManouver(column, x, missile_count, decision):
             decision = input("ERROR: Out of missiles. Try again: ").upper()
         else: error = False
     return decision
+
 
 def manouverUFO(column, row, grid, y, x, game_over):
     winner = 0 # no winner yet
@@ -101,6 +110,7 @@ def manouverUFO(column, row, grid, y, x, game_over):
     grid[y][x] = 'U'
     return x, y, game_over, winner # game_over remains untouched unless UFO lands on bottom row, 2 is the winner
 
+
 def checkUFOManouver(column, row, y, x, decision):
     error = True
     while (error == True): 
@@ -112,6 +122,7 @@ def checkUFOManouver(column, row, y, x, decision):
             decision = input("ERROR: Out of grid. Try again: ").upper()
         else: error = False
     return decision
+
 
 def missileAdvancement(grid, game_over):
     winner = 0
@@ -128,35 +139,38 @@ def missileAdvancement(grid, game_over):
                     grid[i-1][j] = 'M'
     return game_over, winner
 
+
 def gameStatus(columns, rows, grid, missile_count, ship_x_pos, ufo_x_pos, ufo_y_pos):
     game_over = False
     x = 0
     while (game_over == False):
         x += 1
-        print ("\n-------------- Start of Round", x, "--------------")
-        printGrid(columns, rows, grid) # rows = 7
+        print ("\n\n-------------- Start of Round", x, "--------------")
+        printGrid(columns, rows, grid, True) # rows = 7
         ship_x_pos, missile_count = manouverShip(columns, rows-1, grid, missile_count, ship_x_pos)
-        printGrid(columns, rows, grid) # rows = 7
+        printGrid(columns, rows, grid, False) # rows = 7
         ufo_x_pos, ufo_y_pos, game_over, winner_UFO = manouverUFO(columns, rows, grid, ufo_y_pos, ufo_x_pos, game_over)
         game_over, winner_ship = missileAdvancement(grid, game_over)
-        print ("\n-------------- End of Round", x, "--------------")
-        printGrid(columns, rows, grid) # rows = 7
+        print ("\n\n-------------- End of Round", x, "--------------")
+        printGrid(columns, rows, grid, True) # rows = 7
         if (game_over == True): declareWinner(winner_UFO, winner_ship)
+
 
 def declareWinner(ufo, ship):
     if (ufo != 0):
         print ("UFO WINS!")
-    else: # if game over, and ufo didn't win, then ship won
+    else: 
         print ("SHIP WINS!")
+
 
 def main():
     missile_count = 20
     columns, rows, grid = createGrid()
-    printGrid(columns, rows, grid) # rows = 7
+    printGrid(columns, rows, grid, True) # rows = 7
 
     print ("Enter ship initial column", end='')
     ship_y_position, ship_x_pos = getInitialPositions(1, rows, grid)
-    printGrid(columns, rows, grid) # rows = 7
+    printGrid(columns, rows, grid, False) # rows = 7
     print ("Enter ufo initial column", end='')
     ufo_y_pos, ufo_x_pos = getInitialPositions(2, rows, grid)
 
